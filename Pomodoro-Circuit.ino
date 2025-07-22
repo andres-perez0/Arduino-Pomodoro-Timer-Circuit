@@ -1,3 +1,9 @@
+/*
+  Pomodoro-Circuit Prototype 
+  Made by Andres Perez - 2025
+*/
+
+
 #include "LedControl.h"
 
 const static byte numericBitmap[10][5] = {
@@ -17,12 +23,13 @@ unsigned long previousMillis=0;
 const long minPeriod=60000;
 int workMode=1;
 int workMinutes=50, breakMinutes=10;
-int tenthMinute, onesMinute;
+int tenthMinute=5, onesMinute=0;
 
 LedControl lc = LedControl(12, 11, 10, 1);
 
 void setup() {
-  Serial.begin(9600);
+  // Commented out Serial Statements to reduce power consumption
+  // Serial.begin(9600);
 	lc.shutdown(0, false);
 	lc.setIntensity(0, 1); 
 	lc.clearDisplay(0);
@@ -33,15 +40,21 @@ void setup() {
 
 void loop() {
   unsigned long currentMillis=millis();
+  time_display(tenthMinute, onesMinute);
   
   if (currentMillis - previousMillis >= minPeriod) {
     previousMillis = currentMillis;
 
     if (workMode) {
+      // If you're in the work period
+      // Decrements first
       workMinutes -= 1; 
 
       if (workMinutes < 0) {
-        Serial.println("break started! :)");
+        // If your work minutes go below zero (Period is finished)
+        // Set the workMode to False (0) and set the break minutes 
+        
+        // Serial.println("break started! :)");
         workMode = 0;       
         breakMinutes = 10;  
 
@@ -56,9 +69,9 @@ void loop() {
       breakMinutes -= 1; 
 
       if (breakMinutes < 0) {
-        Serial.println("work resume! :)");
+        // Serial.println("work resume! :)");
         workMode = 1;       
-        workMinutes = 60;   
+        workMinutes = 50;   
 
         tenthMinute = workMinutes / 10;
         onesMinute = workMinutes % 10;
@@ -69,12 +82,11 @@ void loop() {
       }
     }
   }
-  time_display(tenthMinute, onesMinute);
 
-  Serial.print("Tenth Place: ");
-  Serial.print(tenthMinute);
-  Serial.print(" Minute Place: ");
-  Serial.println(onesMinute);
+  // Serial.print("Tenth Place: ");
+  // Serial.print(tenthMinute);
+  // Serial.print(" Minute Place: ");
+  // Serial.println(onesMinute);
   delay(100);
 }
 
